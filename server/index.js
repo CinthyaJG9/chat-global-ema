@@ -24,7 +24,7 @@ app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 
 io.on("connection", (socket) => {
-  console.log("socket conectado", socket.id);
+  console.log("socket conectado o", socket.id);
 
   socket.on("disconnect", () => {
     console.log("socket desconectado", socket.id);
