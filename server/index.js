@@ -40,15 +40,15 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("chat:global", ({ name, img, messaage }) => {
-    console.log({ name, img, messaage });
-    io.emit("chat:global", {
-      name,
-      src: img ?? "/img/user.png",
-      messages: [messaage],
-      main: false,
-    });
+ socket.on("chat:global", ({ name, img, message }) => {
+  console.log({ name, img, message });
+  io.emit("chat:global", {
+    name,
+    src: img ?? "/img/user.png",
+    messages: [message],  // Corregir aquí
+    main: false,
   });
+});
 
   socket.on("chat:escribiendo", (usuario) => {
     console.log(usuario);
