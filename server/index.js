@@ -4,8 +4,12 @@ import morgan from "morgan";
 import { Server as SocketServer } from "socket.io";
 import cors from "cors";
 
+// import app from "./app.js";
 const PORT = process.env.PORT || 8080;
+// app.listen(PORT);
+// console.log(`Server on port http://localhost:${PORT}`);
 
+// Initializations
 const app = express();
 const server = http.createServer(app);
 const io = new SocketServer(server, {
@@ -14,6 +18,7 @@ const io = new SocketServer(server, {
   },
 });
 
+// Middlewares
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
@@ -31,24 +36,18 @@ io.on("connection", (socket) => {
 
   socket.on("chat:mensaje", (data) => {
     console.log(data);
-    const clienteActual = socket.id;
-    
-    // Verificar el ID del cliente que envió el mensaje
-    if (clienteActual !== data.clienteId) {
-      // Emitir el mensaje a todos los demás clientes
-      socket.broadcast.emit("chat:mensaje", data);
-    }
+    io.emit("chat:mensaje", data);
   });
 
- socket.on("chat:global", ({ name, img, message }) => {
-  console.log({ name, img, message });
-  io.emit("chat:global", {
-    name,
-    src: img ?? "/img/user.png",
-    messages: [message],  // Corregir aquí
-    main: false,
+  socket.on("chat:global", ({ name, img, messaage }) => {
+    console.log({ name, img, messaage });
+    io.emit("chat:global", {
+      name,
+      src: img ?? "/img/user.png",
+      messages: [messaage],
+      main: false,
+    });
   });
-});
 
   socket.on("chat:escribiendo", (usuario) => {
     console.log(usuario);
@@ -58,4 +57,3 @@ io.on("connection", (socket) => {
 
 server.listen(PORT);
 console.log(`server on port ${PORT}`);
-
