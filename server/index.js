@@ -4,12 +4,8 @@ import morgan from "morgan";
 import { Server as SocketServer } from "socket.io";
 import cors from "cors";
 
-// import app from "./app.js";
 const PORT = process.env.PORT || 8080;
-// app.listen(PORT);
-// console.log(`Server on port http://localhost:${PORT}`);
 
-// Initializations
 const app = express();
 const server = http.createServer(app);
 const io = new SocketServer(server, {
@@ -18,13 +14,13 @@ const io = new SocketServer(server, {
   },
 });
 
-// Middlewares
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: false }));
 
 io.on("connection", (socket) => {
-  console.log("socket conectado", socket.id);
+  
+   console.log("socket conectado", socket.id);
 
   socket.on("disconnect", () => {
     console.log("socket desconectado", socket.id);
@@ -36,7 +32,14 @@ io.on("connection", (socket) => {
 
   socket.on("chat:mensaje", (data) => {
     console.log(data);
-    io.emit("chat:mensaje", data);
+    
+     const clienteActual = socket.id;
+
+    // Verificar el ID del cliente que envió el mensaje
+    if (clienteActual !== data.clienteId) {
+      // Emitir el mensaje a todos los demás clientes
+      socket.broadcast.emit("chat:mensaje", data);
+    }
   });
 
   socket.on("chat:global", ({ name, img, messaage }) => {
@@ -48,7 +51,6 @@ io.on("connection", (socket) => {
       main: false,
     });
   });
-
   socket.on("chat:escribiendo", (usuario) => {
     console.log(usuario);
     socket.broadcast.emit("chat:escribiendo", usuario);
